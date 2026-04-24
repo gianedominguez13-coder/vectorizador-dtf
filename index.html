@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vectorizador DTF PRO</title>
+</head>
+
+<body style="font-family:sans-serif;text-align:center;padding:40px;">
+
+<h1>Vectorizador DTF PRO</h1>
+
+<input type="file" id="fileInput" />
+<br><br>
+
+<button onclick="upload()">Vectorizar</button>
+
+<br><br>
+
+<a id="downloadSVG" style="display:none">Descargar SVG</a><br>
+<a id="downloadPNG" style="display:none">Descargar PNG 300 DPI</a>
+
+<script>
+async function upload() {
+    const file = document.getElementById("fileInput").files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("https://vectorizador-dtf.onrender.com/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    const blobSVG = new Blob([data.svg], {type: "image/svg+xml"});
+    const urlSVG = URL.createObjectURL(blobSVG);
+
+    const linkSVG = document.getElementById("downloadSVG");
+    linkSVG.href = urlSVG;
+    linkSVG.download = "vector.svg";
+    linkSVG.style.display = "block";
+
+    const byteArray = Uint8Array.from(atob(data.png), c => c.charCodeAt(0));
+    const blobPNG = new Blob([byteArray], {type: "image/png"});
+    const urlPNG = URL.createObjectURL(blobPNG);
+
+    const linkPNG = document.getElementById("downloadPNG");
+    linkPNG.href = urlPNG;
+    linkPNG.download = "imagen_300dpi.png";
+    linkPNG.style.display = "block";
+}
+</script>
+
+</body>
+</html>
